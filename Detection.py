@@ -4,6 +4,7 @@ import os
 import numpy as np
 import multiprocessing
 from cvzone.PoseModule import PoseDetector
+import pygame
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -54,9 +55,16 @@ def start_speech_process():
     Starts the speech conversation logic from WiseDinosaur.py in a separate process.
     """
     from WiseDinosaur import main as wisedino_main
+    from WiseDinosaur import main as wisedino_main
     speech_process = multiprocessing.Process(target=wisedino_main)
     speech_process.start()
     return speech_process
+
+def play_roar_sound_if_condition_met():
+    pygame.mixer.init()
+    roar_sound = pygame.mixer.Sound("mp3/roar.mp3")
+    roar_sound.play()
+    pygame.time.wait(int(roar_sound.get_length() * 1000))
 
 def main_position_detector():
     pose_detector = PoseDetector()
@@ -145,6 +153,8 @@ def main_position_detector():
                     significant_changes = sum(var >= 500 for var in variances)
 
                     if significant_changes >= 2:
+                        play_roar_sound_if_condition_met()
+                        print("roaring")
                         start_moving_forward()
                         # Optionally reset the array after moving forward
                         # distance_averages.clear()
