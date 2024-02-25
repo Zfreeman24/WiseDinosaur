@@ -1,15 +1,14 @@
 import random
 import speech_recognition as sr
 import openai
-import os
 import pygame
 import json
 from gtts import gTTS
+from io import BytesIO
 from pydub import AudioSegment
 from pydub.playback import play
 
-
-API_KEY = "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"
+API_KEY = "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"
 
 def load_json_data(filename):
     with open(filename, 'r') as file:
@@ -34,26 +33,22 @@ def listen_to_speech(timeout=5):
             return None
 
 def speak_text(text):
-    # Randomly select an accent's tld
-    accents = load_json_data("json/accents.json")
-    tld = random.choice(list(accents.values()))
+    """Convert text to speech and play it using the globally selected accent."""
+    global tld  # Ensure we're using the global variable
     
-    # Ensure the directory exists
-    mp3_directory = "mp3"
-    os.makedirs(mp3_directory, exist_ok=True)
-    mp3_path = os.path.join(mp3_directory, "response.mp3")
-
-    # Generate speech with the selected accent
-    tts = gTTS(text=text, lang='en', tld = tld, slow=False)
-    tts.save(mp3_path)
+    # Generate speech with gTTS using the selected accent for the entire conversation
+    tts = gTTS(text=text, lang='en', tld=tld, slow=False)
+    mp3_fp = BytesIO()
+    tts.write_to_fp(mp3_fp)
+    mp3_fp.seek(0)  # Reset the pointer of the BytesIO object to the beginning
     
-    # Play the generated speech
-    sound = AudioSegment.from_mp3("./mp3/response.mp3")
+    # Load the audio from the BytesIO object and play it
+    sound = AudioSegment.from_file(mp3_fp, format="mp3")
     play(sound)
+
 
 def ask_openai(prompt, conversation_history):
     openai.api_key = API_KEY
-    # Include a reminder of the dinosaur's perspective in every prompt
     prompt_reinforcement = "Remember, I'm a dinosaur with no understanding of modern concepts like technology or the stock market. I can only relate things to my prehistoric experiences."
     messages = conversation_history + [
         {"role": "system", "content": "The assistant is a dinosaur and should respond from that perspective, unaware of modern technologies or concepts."},
@@ -68,27 +63,46 @@ def ask_openai(prompt, conversation_history):
     return return_response, conversation_history
 
 def play_roar_sound_if_condition_met(distance):
-    pygame.mixer.init()  # Initialize pygame mixer
-    roar_sound = pygame.mixer.Sound("mp3/roar.mp3")  # Load the MP3 file
-
-    # Check if the condition is met and play the sound if it is
+    pygame.mixer.init()
+    roar_sound = pygame.mixer.Sound("mp3/roar.mp3")
     if distance > 5.0:
         roar_sound.play()
-        pygame.time.wait(int(roar_sound.get_length() * 1000))  # Wait for the sound to finish playing
+        pygame.time.wait(int(roar_sound.get_length() * 1000))
 
 def get_dinosaur_prompt_and_personality(dinosaurs):
     dinosaur, personality = random.choice(list(dinosaurs.items()))
-    template = f"This is a conversation with a {dinosaur}, who is {personality}."
-    return template
+    return dinosaur, personality  # Return just the dinosaur and personality
 
+
+def get_random_dinosaur_name():
+    """Generate a random name for the dinosaur."""
+    # Example names, feel free to expand this list
+    names = ["Rex", "Spike", "Leaf", "Roary", "Jade"]
+    return random.choice(names)
 
 def main():
     dinosaurs = load_json_data("json/personalities.json")
+    accents = load_json_data("json/accents.json")
+    favorite_activities_list = load_json_data("favorite_activities.json")  # Load favorite activities from JSON
+
+    
+    global tld
+    tld = random.choice(list(accents.values()))
 
     conversation_history = []
-    dinosaur_prompt = get_dinosaur_prompt_and_personality(dinosaurs)
-    print(f"Context: {dinosaur_prompt}")
-    conversation_history.append({"role": "system", "content": dinosaur_prompt})
+    dinosaur, personality = get_dinosaur_prompt_and_personality(dinosaurs)
+    
+    dinosaur_name = get_random_dinosaur_name()
+
+    favorite_activities = random.choice(favorite_activities_list)
+
+    
+    # Adjust the greeting to properly format the dinosaur's type and personality
+    initial_greeting = f"Hello! My name is {dinosaur_name}, and I am a {dinosaur}. I am {personality}. I love {favorite_activities}. What's on your mind today?"
+    print(f"GPT-3 Response: {initial_greeting}")  # Display the greeting
+    
+    # Speak the initial greeting
+    speak_text(initial_greeting)
 
     while True:
         user_speech = listen_to_speech()
@@ -104,7 +118,7 @@ def main():
         speak_text(gpt_response)
 
     # Example usage of playing sound based on condition
-    distance = 5.1  # Example condition; replace or modify as needed
+    distance = 0;
     play_roar_sound_if_condition_met(distance)
 
 if __name__ == "__main__":
