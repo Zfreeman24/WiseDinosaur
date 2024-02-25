@@ -3,12 +3,17 @@ import speech_recognition as sr
 import openai
 import pygame
 import json
+import os
 from gtts import gTTS
+from dotenv import load_dotenv
 from io import BytesIO
 from pydub import AudioSegment
 from pydub.playback import play
 
-API_KEY = "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"
+# Load environment variables from .env file
+load_dotenv()
+
+API_KEY = os.getenv('WISEDINOSAUR_API_KEY')
 
 def load_json_data(filename):
     with open(filename, 'r') as file:
@@ -81,19 +86,23 @@ def get_random_dinosaur_name():
     return random.choice(names)
 
 def main():
+    # Assuming load_json_data loads the JSON into a Python dictionary
     dinosaurs = load_json_data("json/personalities.json")
     accents = load_json_data("json/accents.json")
-    favorite_activities_list = load_json_data("favorite_activities.json")  # Load favorite activities from JSON
+    activities_data = load_json_data("json/favorite_activities.json")  # This will be a dictionary
 
-    
+    # Access the list of activities with the 'activities' key
+    favorite_activities_list = activities_data["activities"]  # Assuming the JSON structure mentioned above
+
     global tld
     tld = random.choice(list(accents.values()))
 
     conversation_history = []
     dinosaur, personality = get_dinosaur_prompt_and_personality(dinosaurs)
-    
+
     dinosaur_name = get_random_dinosaur_name()
 
+    # Now, favorite_activities_list is correctly a list, so this should work without errors
     favorite_activities = random.choice(favorite_activities_list)
 
     
