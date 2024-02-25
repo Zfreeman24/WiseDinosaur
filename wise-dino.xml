@@ -1,0 +1,76 @@
+<mujoco model="wise-dino">
+    <!-- Visual Parameters -->
+    <visual>
+        <map force="0.1" zfar="30"/>
+        <rgba haze="0.15 0.25 0.35 1"/>
+        <global offwidth="2560" offheight="1440" elevation="-20" azimuth="120"/>
+    </visual>
+   <!-- <compiler autolimits="true"/> -->
+    <!-- Defaults -->
+    <default>
+        <motor ctrlrange="-1 1" ctrllimited="true"/>
+        <geom friction=".7" solimp=".9 .99 .003" solref=".015 1"/>
+        <joint damping=".2" armature=".01" solimplimit="0 .99 .01"/>
+    </default>
+    <!-- Model -->
+    <worldbody>
+        <geom name="floor" size="0 0 .05" type="plane" condim="3"/>
+        <light directional="false" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+        <body name="Chassis" pos="0 0 0.2">
+            <freejoint/>
+            <!-- Main body's boxes-->
+            <geom type="box" fromto="-0.055 0 0 0.055 0 0" size="0.01"/>
+            <geom type="box" fromto="-0.055 0.02 0 0.055 0.02 0" size="0.01"/>
+            <geom type="box" fromto="-0.055 -0.02 0 0.055 -0.02 0" size="0.01"/>
+            <geom type="box" fromto="-0.055 -0.04 0 0.055 -0.04 0" size="0.01"/>
+            <geom type="box" fromto="-0.055 0.04 0 0.055 0.04 0" size="0.01"/>
+
+            <body name="Right Top arm" pos="0.0475 0.0425 0"> 
+                <joint name="RT_joint" type="hinge" axis="0 0 1" limited="true" range="0 100"/> 
+                <geom type="capsule" fromto="0 0 0 0.03 0 0" size="0.005"/> 
+                <body name="Right Top_Y arm" pos="0.03 0 0"> 
+                    <joint name="RTY_joint" type="hinge" axis="0 1 0" limited="true" range="0 100"/> 
+                    <geom type="capsule" fromto="0 0 0 0.06 0 0" size="0.005"/> 
+                </body>
+            </body>
+
+            <body name="Left Top arm" pos="-0.0475 0.0425 0"> 
+                <joint name="LT_joint" type="hinge" axis="0 0 -1" limited="true" range="0 100"/> 
+                <geom type="capsule" fromto="0 0 0 -0.03 0 0" size="0.005"/> 
+                <body name="Left Top_Y arm" pos="-0.03 0 0"> 
+                    <joint name="LTY_joint" type="hinge" axis="0 -1 0" limited="true" range="0 100"/> 
+                <geom type="capsule" fromto="0 0 0 -0.06 0 0" size="0.005"/> 
+                </body>
+            </body>
+
+            <body name="Right Bottom arm" pos="0.0475 -0.0425 0"> 
+                <joint name="RB_joint" type="hinge" axis="0 0 -1" limited="true" range="0 100"/> 
+                <geom type="capsule" fromto="0 0 0 0.03 0 0" size="0.005"/> 
+                <body name="Right Bottom_Y arm" pos="0.03 0 0"> 
+                    <joint name="RBY_joint" type="hinge" axis="0 1 0" limited="true" range="0 100"/> 
+                    <geom type="capsule" fromto="0 0 0 0.06 0 0" size="0.005"/> 
+                </body>
+            </body>
+
+            <body name="Left Bottom arm" pos="-0.0475 -0.0425 0"> 
+                <joint name="LB_joint" type="hinge" axis="0 0 1" limited="true" range="0 100"/> 
+                <geom type="capsule" fromto="0 0 0 -0.03 0 0" size="0.005"/> 
+                <body name="Left Bottom_Y arm" pos="-0.03 0 0"> 
+                    <joint name="LBY_joint" type="hinge" axis="0 -1 0" limited="true" range="0 100"/> 
+                <geom type="capsule" fromto="0 0 0 -0.06 0 0" size="0.005"/> 
+                </body>
+            </body>
+
+        </body>
+    </worldbody>
+    <actuator>
+        <position joint="RT_joint" kp="50"/>
+        <position joint="RTY_joint" kp="50"/>
+        <position joint="LT_joint" kp="50"/>
+        <position joint="LTY_joint" kp="50"/>
+        <position joint="RB_joint" kp="50"/>
+        <position joint="RBY_joint" kp="50"/>
+        <position joint="LB_joint" kp="50"/>
+        <position joint="LBY_joint" kp="50"/>
+    </actuator>
+</mujoco>
