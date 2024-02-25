@@ -7,10 +7,6 @@ from cvzone.PoseModule import PoseDetector
 from pydub import AudioSegment
 from pydub.playback import play
 
-def play_test_sound():
-    test_sound = AudioSegment.from_file("mp3/roar.mp3", format="mp3")
-    play(test_sound)
-
 def start_moving_forward():
     print("Robot starts moving forward.")  # Placeholder for actual robot movement command
 
@@ -64,7 +60,7 @@ def start_speech_process():
 
 def main_position_detector():
     pose_detector = PoseDetector()
-    cap = cv2.VideoCapture(4)  # Adjust the camera index if needed
+    cap = cv2.VideoCapture(0)  # Adjust the camera index if needed
 
     # Configuration and initialization
     reference_hip_width_cm = 20.0
@@ -135,7 +131,7 @@ def main_position_detector():
 
             if average_width_px > 5:
                 distance_cm = (focal_length * reference_hip_width_cm) / average_width_px
-                print(f"Calculated Distance (cm): {distance_cm}")
+                #print(f"Calculated Distance (cm): {distance_cm}")
 
                 # Update the array of last five average distances
                 distance_averages.append(distance_cm)
@@ -174,6 +170,3 @@ def main_position_detector():
 
 if __name__ == "__main__":
     main_position_detector()
-    p = multiprocessing.Process(target=play_test_sound)
-    p.start()
-    p.join()
