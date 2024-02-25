@@ -6,6 +6,11 @@ import cv2
 #distance is 36" or 91cm 376.22061 pixels
 # width is 9.5"or 24 cm
 # focal length = 1426.50314625
+# 1691.43785
+# 63" 160.02
+# 12" 30cm
+# 317.1049598406741 pixels
+
 def calculate_focal_length(knownWidth, knownDistance, perWidth):
     # Calculate and return the focal length
     return (perWidth * knownDistance) / knownWidth
@@ -15,7 +20,7 @@ KNOWN_WIDTH_CM = 21.0  # Width of A4 paper
 KNOWN_DISTANCE_CM = 50.0  # Distance from camera to object
 
 # Capture an image
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(4)
 ret, frame = cap.read()
 cap.release()
 
