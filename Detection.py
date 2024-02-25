@@ -4,7 +4,6 @@ import os
 import numpy as np
 import multiprocessing
 from cvzone.PoseModule import PoseDetector
-from WiseDinosaur import main as wisedino_main
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -58,6 +57,7 @@ def start_speech_process():
     """
     Starts the speech conversation logic from WiseDinosaur.py in a separate process.
     """
+    from WiseDinosaur import main as wisedino_main
     speech_process = multiprocessing.Process(target=wisedino_main)
     speech_process.start()
     return speech_process
