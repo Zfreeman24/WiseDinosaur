@@ -4,13 +4,35 @@ WiseDinosaur is an interactive robotic assistant that combines the fascination o
 
 ## Technologies Used
 
-- **Computer Vision**: OpenCV and cvzone for pose detection and tracking.
-- **Speech Recognition**: Utilizes Python's `speech_recognition` library for understanding user commands.
-- **Text-to-Speech**: Leverages `gTTS` for generating speech from text, allowing the dinosaur to "speak."
-- **Audio Processing**: `pydub` for handling audio effects like dinosaur roars.
-- **Multiprocessing**: For managing concurrent execution of vision tracking and speech interaction.
-- **OpenAI's GPT-3**: Powers dynamic and intelligent conversations with users.
-- **Pygame**: Used for additional audio handling and possibly game mechanics.
+WiseDinosaur utilizes a range of technologies to bring an interactive and educational experience. Here's a quick overview:
+
+### Computer Vision
+
+![OpenCV](https://opencv.org/wp-content/uploads/2020/07/cropped-OpenCV_logo_white_600x.png) ![cvzone](https://www.computervision.zone/wp-content/uploads/2021/07/cvzone-logo.png)
+
+- **OpenCV** for real-time computer vision.
+- **cvzone** for simplifying OpenCV tasks, particularly in pose detection.
+
+### Speech and Audio Processing
+
+![SpeechRecognition](https://www.example.com/speech_recognition_logo.png) ![gTTS](https://www.example.com/gtts_logo.png) ![PyDub](https://www.example.com/pydub_logo.png)
+
+- **SpeechRecognition** library for converting spoken words into text.
+- **gTTS (Google Text-to-Speech)** for generating speech from text.
+- **PyDub** for manipulating and playing audio.
+
+### Multiprocessing and AI
+
+![Python](https://www.python.org/static/community_logos/python-logo.png) ![OpenAI](https://www.example.com/openai_logo.png)
+
+- **Python Multiprocessing** for handling concurrent processes.
+- **OpenAI's GPT-3** for intelligent and dynamic conversations.
+
+### Game Development and Environment
+
+![Pygame](https://www.pygame.org/images/logo_lofi.png)
+
+- **Pygame** for additional sound effects and interactive elements.
 
 ## Installation
 
