@@ -14,47 +14,17 @@ def start_moving_forward():
 def stop_moving():
     print("Robot stops.")  # Placeholder for actual robot stop command
 
-def check_for_stop_signal(signal_file="stop_signal.txt"):
-    """
-    Check if the stop signal file exists and contains 'True'.
-
-    Args:
-    - signal_file (str): The file path to check for the stop signal.
-
-    Returns:
-    - bool: True if a stop signal is found, False otherwise.
-    """
+def check_for_stop_signal(signal_file="stop_signal.txt"): # Check if the stop signal file was generated
     if os.path.exists(signal_file):
         with open(signal_file, "r") as file:
             content = file.read().strip()
             return content == "True"
     return False
 
-def weighted_average(measurements, weight_increment=0.2):
-    if not measurements:
-        return None
-    weight = 1.0  # Starting weight
-    weighted_sum = 0
-    total_weights = 0
-    for measurement in reversed(measurements):
-        weighted_sum += measurement * weight
-        total_weights += weight
-        weight += weight_increment  # Increment weight for recent measurements
-    return weighted_sum / total_weights
-
-def is_reasonable_measurement(new_measurement, last_good_measurement, base_threshold=1000, percentage_threshold=0.1):
-    if last_good_measurement is None:
-        return True  # Accept if no previous measurement
-    absolute_threshold = last_good_measurement * percentage_threshold
-    threshold = max(base_threshold, absolute_threshold)  # Use the larger of the base or percentage-based threshold.
-    
-    return abs(new_measurement - last_good_measurement) < threshold
-
 def start_speech_process():
     """
     Starts the speech conversation logic from WiseDinosaur.py in a separate process.
     """
-    from WiseDinosaur import main as wisedino_main
     from WiseDinosaur import main as wisedino_main
     speech_process = multiprocessing.Process(target=wisedino_main)
     speech_process.start()
@@ -71,16 +41,15 @@ def main_position_detector():
     cap = cv2.VideoCapture(0)  # Adjust the camera index if needed
 
     # Configuration and initialization
-    reference_hip_width_cm = 20.0
-    focal_length = 1426.50314625  # Calibrated focal length in pixels
-    distance_measurements = []  # Store recent distance measurements
+    reference_hip_width_cm = 20.0 # This is a estimation of the persons measured hips to use later in calculations, change as needed
+
+    # Calibrate this through 'focal_length.py' to get a more accurate measurement!
+    focal_length = 1426.50314625 # Calibrated focal length in pixels through 'focal_length.py' 
+    
     distance_averages = []  # Store the last five average distances
-    max_measurements = 5  # Max measurements for averaging
-    last_known_good_measurement = None  # Initialize the last known good measurement
-    last_distance_cm = None  # Track the last average distance to detect significant changes
     start_time = time.time()
     warm_up_duration = 2  # 2 seconds warm-up duration
-    stop_signal = False 
+
     # Initialize and start the speech process
     speech_process = start_speech_process()
 
@@ -93,9 +62,6 @@ def main_position_detector():
         cv2.imshow('Frame', frame)
         cv2.waitKey(1)
 
-    # Main loop
-    avg_distance_cm = "Calculating..."  # Initialize as a string
-
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -105,22 +71,21 @@ def main_position_detector():
         frame = pose_detector.findPose(frame, draw=True)
         lmlist, _ = pose_detector.findPosition(frame, draw=True)
         
-        # Check if we are saying goodbye
+        # Check if we are saying 'goodbye' in the speech process
         if check_for_stop_signal():
             print("Stop signal received. Exiting program.")
             os.remove("stop_signal.txt") #Remove the temp file
             break
-            # exit(0)  # Exits the program with a status code of 1
 
         if len(lmlist) > 24:
             # Hip landmarks
-            x3, y3 = lmlist[23][1], lmlist[23][2]
-            x4, y4 = lmlist[24][1], lmlist[24][2]
+            x3, y3 = lmlist[23][1], lmlist[23][2] # Right hip measurement
+            x4, y4 = lmlist[24][1], lmlist[24][2] # Left hip measurement
             hip_width_px = abs(x4 - x3)
             
             # Chest landmarks
-            x1, y1 = lmlist[11][1], lmlist[11][2]
-            x2, y2 = lmlist[12][1], lmlist[12][2]
+            x1, y1 = lmlist[11][1], lmlist[11][2] # Right chest measurement
+            x2, y2 = lmlist[12][1], lmlist[12][2] # Left chest measurement
             chest_width_px = abs(x2 - x1)
 
             # Calculate the centers of the hip and chest
@@ -129,16 +94,13 @@ def main_position_detector():
 
             # Average the centers for a more stable center point
             object_center_x = (hip_center_x + chest_center_x) // 2
-            frame_center_x = frame.shape[1] // 2
+            #frame_center_x = frame.shape[1] // 2 # Note: This could be used to figure out when to turn the robot
 
             # X-axis distance: Correctly represents left/right distance from center
-            distance_from_center = object_center_x - frame_center_x
+            #distance_from_center = object_center_x - frame_center_x # Note: This would be used later for calculuting when to turn the robot 
 
-            # Use the average of hip and chest width for distance calculation
-            average_width_px = (hip_width_px + chest_width_px) / 2
-
-            if average_width_px > 5:
-                distance_cm = (focal_length * reference_hip_width_cm) / average_width_px
+            if object_center_x > 5:
+                distance_cm = (focal_length * reference_hip_width_cm) / object_center_x
                 #print(f"Calculated Distance (cm): {distance_cm}")
 
                 # Update the array of last five average distances
@@ -153,11 +115,9 @@ def main_position_detector():
                     significant_changes = sum(var >= 500 for var in variances)
 
                     if significant_changes >= 2:
-                        play_roar_sound_if_condition_met()
+                        play_roar_sound_if_condition_met() # for some reason this is causing lag, need to look at multiprocessing issues?
                         print("roaring")
                         start_moving_forward()
-                        # Optionally reset the array after moving forward
-                        # distance_averages.clear()
 
                     cv2.putText(frame, f"Distance: {distance_cm:.2f} cm", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             else:
@@ -169,10 +129,12 @@ def main_position_detector():
 
         # Display the frame
         cv2.imshow('Frame', frame)
-
+    
+        # Check if user quit the program manually
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    # clean up
+
+    # Clean up
     cap.release()
     cv2.destroyAllWindows()
     speech_process.terminate()  # Terminate the speech process if it's still running
