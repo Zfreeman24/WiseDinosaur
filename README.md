@@ -45,6 +45,7 @@ python Detector.py
 ## Notes
 - **MP3**: The MP3 directory is meant to store any MP3 files that the robot will use to produce a specified noise.
 - **GPT-3**: The GPT-3 directory is meant to store any files that are used to train the GPT-3 model.
+- **JSON**: The Json files are meant to store any data that is used to train the GPT-3 model.
 
 ## Challenges Faced
 
