@@ -42,6 +42,10 @@ python Detector.py
 - **Voice Interaction**: Speak to WiseDinosaur, and it will respond with voice-generated answers. It can answer questions, tell you about dinosaurs, or just chat.
 - **Learning and Fun**: Besides interaction, WiseDinosaur aims to educate users about dinosaurs, their habits, and their world in an engaging manner.
 
+## Notes
+- **MP3**: The MP3 directory is meant to store any MP3 files that the robot will use to produce a specified noise.
+- **GPT-3**: The GPT-3 directory is meant to store any files that are used to train the GPT-3 model.
+
 ## Challenges Faced
 
 - Integrating speech recognition and response generation in real-time with robotic movements.
