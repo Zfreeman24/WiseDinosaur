@@ -1,2 +1,5 @@
 #Machine specific configuration files
 .env
+
+#Compiled python files
+__pycache__/
