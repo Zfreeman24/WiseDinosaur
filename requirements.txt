@@ -1,0 +1,9 @@
+opencv-python
+numpy
+cvzone
+pygame
+pydub
+SpeechRecognition
+openai
+gtts
+python-dotenv
