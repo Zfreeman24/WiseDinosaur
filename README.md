@@ -23,7 +23,9 @@ git clone https://github.com/YourUsername/WiseDinosaur.git
 cd WiseDinosaur
 
 3. Install the required Python packages:
-
+```
+pip install -r requirements.txt
+```
 
 ## Running the Code
 
@@ -31,8 +33,9 @@ To start interacting with WiseDinosaur, follow these steps:
 
 1. Ensure you have a microphone and webcam connected to your computer.
 2. Run the main script:
+```
 python Detector.py
-
+```
 
 3. Interact with WiseDinosaur using voice commands. Say "goodbye" to stop the interaction.
 
